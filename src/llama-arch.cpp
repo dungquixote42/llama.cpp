@@ -1503,6 +1503,7 @@ static std::set<llm_tensor> llm_get_tensor_names(llm_arch arch) {
                 LLM_TENSOR_FFN_DOWN_SHEXP,
                 LLM_TENSOR_FFN_UP_SHEXP,
                 LLM_TENSOR_FFN_EXP_PROBS_B,
+                LLM_TENSOR_FFN_POST_NORM,
             };
         case LLM_ARCH_PLM:
             return {

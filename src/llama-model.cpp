@@ -1737,7 +1737,14 @@ void llama_model::load_hparams(llama_model_loader & ml) {
                 switch (hparams.n_layer) {
                     case 27: type = LLM_TYPE_16B; break;
                     case 60: type = LLM_TYPE_236B; break;
-                    case 61: type = LLM_TYPE_671B; break;
+                    case 61:
+                        ml.get_key(LLM_KV_EXPERT_COUNT, hparams.n_expert);
+                        switch (hparams.n_expert) {
+                            case 128: type = LLM_TYPE_671B; break;      // mistral-large
+                            case 192: type = LLM_TYPE_519B_A33B; break; // a.x-k1
+                            case 256: type = LLM_TYPE_671B; break;      // deepseek2
+                            default: type = LLM_TYPE_UNKNOWN;
+                        } break;
                     default: type = LLM_TYPE_UNKNOWN;
                 }
             } break;
@@ -4912,6 +4919,8 @@ bool llama_model::load_tensors(llama_model_loader & ml) {
                     // lite variants include DeepSeek-V2-Lite, GigaChat3-10B-A1.8B
                     const bool is_lite = (hparams.n_layer == 27 || hparams.n_layer == 26);
 
+                    const bool is_axk1 = n_expert == 192;
+
                     const bool is_mla = (hparams.n_embd_head_k_mla != 0 && hparams.n_embd_head_v_mla != 0);
 
                     // note: these are the actual head sizes you get when treating as MHA or after "decompression" using wv_b for MLA
@@ -4992,6 +5001,10 @@ bool llama_model::load_tensors(llama_model_loader & ml) {
                             layer.ffn_gate_shexp = create_tensor(tn(LLM_TENSOR_FFN_GATE_SHEXP, "weight", i), {n_embd, n_ff_exp * n_expert_shared}, 0);
                             layer.ffn_down_shexp = create_tensor(tn(LLM_TENSOR_FFN_DOWN_SHEXP, "weight", i), {        n_ff_exp * n_expert_shared, n_embd}, 0);
                             layer.ffn_up_shexp   = create_tensor(tn(LLM_TENSOR_FFN_UP_SHEXP,   "weight", i), {n_embd, n_ff_exp * n_expert_shared}, 0);
+                        }
+
+                        if (is_axk1) {
+                            layer.ffn_post_norm  = create_tensor(tn(LLM_TENSOR_FFN_POST_NORM, "weight", i), {n_embd}, 0);
                         }
                     }
                 } break;

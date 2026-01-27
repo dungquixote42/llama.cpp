@@ -5,6 +5,8 @@ llm_build_deepseek2::llm_build_deepseek2(const llama_model & model, const llm_gr
     // lite variants include DeepSeek-V2-Lite, GigaChat3-10B-A1.8B
     bool is_lite = (hparams.n_layer == 27 || hparams.n_layer == 26);
 
+    const bool is_axk1 = n_expert == 192;
+
     const bool is_mla = (hparams.n_embd_head_k_mla != 0 && hparams.n_embd_head_v_mla != 0);
 
     // note: these are the actual head sizes you get when treating as MHA or after "decompression" using wv_b for MLA
@@ -233,6 +235,12 @@ llm_build_deepseek2::llm_build_deepseek2(const llama_model & model, const llm_gr
                 cb(cur, "ffn_out", il);
             }
         }
+
+        if (is_axk1) {
+            cur = build_norm(cur, model.layers[il].ffn_post_norm, NULL, LLM_NORM_RMS, il);
+            cb(cur, "ffn_post_norm", il);
+        }
+
         cur = ggml_add(ctx0, cur, ffn_inp);
 
         cur = build_cvec(cur, il);
