@@ -8,6 +8,7 @@
 
 // pre-tokenization types
 enum llama_vocab_pre_type {
+    LLAMA_VOCAB_PRE_TYPE_AXK1            = -1,
     LLAMA_VOCAB_PRE_TYPE_DEFAULT         = 0,
     LLAMA_VOCAB_PRE_TYPE_LLAMA3          = 1,
     LLAMA_VOCAB_PRE_TYPE_DEEPSEEK_LLM    = 2,
