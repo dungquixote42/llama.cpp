@@ -235,11 +235,11 @@ llm_build_deepseek2::llm_build_deepseek2(const llama_model & model, const llm_gr
                 cur = ggml_add(ctx0, moe_out, ffn_shexp);
                 cb(cur, "ffn_out", il);
             }
-        }
 
-        if (is_axk1) {
-            cur = build_norm(cur, model.layers[il].ffn_post_norm, NULL, LLM_NORM_RMS, il);
-            cb(cur, "ffn_post_norm", il);
+            if (is_axk1) {
+                cur = build_norm(cur, model.layers[il].ffn_post_norm, NULL, LLM_NORM_RMS, il);
+                cb(cur, "ffn_post_norm", il);
+            }
         }
 
         cur = ggml_add(ctx0, cur, ffn_inp);
