@@ -1262,6 +1262,7 @@ class TextModel(ModelBase):
             # ref: https://huggingface.co/LGAI-EXAONE/K-EXAONE-236B-A23B
             res = "exaone-moe"
         if chkhsh == "a7cafb5f55b1a0c289dfcbe964388ba449cb6bf373d5fe8f356185e84e5888c7":
+            # ref: https://huggingface.co/skt/A.X-K1
             res = "axk1"
 
         if res is None:
@@ -7707,6 +7708,11 @@ class DeepseekV2Model(TextModel):
             return
         if name.startswith("language_model."):
             name = name.replace("language_model.", "")
+
+        # skip identity tensor for A.X-K1
+        # ref https://huggingface.co/skt/A.X-K1/discussions/7
+        if (self.hparams.get(["architectures"][0], "") == "AXK1ForCausalLM") and ("layers.0.post_mlp_layernorm" in name):
+            return
 
         # skip lm_head.weight if tie_word_embeddings is True
         if self.hparams.get("tie_word_embeddings", False):

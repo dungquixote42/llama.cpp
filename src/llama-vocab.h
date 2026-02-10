@@ -8,7 +8,6 @@
 
 // pre-tokenization types
 enum llama_vocab_pre_type {
-    LLAMA_VOCAB_PRE_TYPE_AXK1            = -1,
     LLAMA_VOCAB_PRE_TYPE_DEFAULT         = 0,
     LLAMA_VOCAB_PRE_TYPE_LLAMA3          = 1,
     LLAMA_VOCAB_PRE_TYPE_DEEPSEEK_LLM    = 2,
@@ -55,6 +54,7 @@ enum llama_vocab_pre_type {
     LLAMA_VOCAB_PRE_TYPE_SOLAR_OPEN      = 43,
     LLAMA_VOCAB_PRE_TYPE_YOUTU           = 44,
     LLAMA_VOCAB_PRE_TYPE_EXAONE_MOE      = 45,
+    LLAMA_VOCAB_PRE_TYPE_AXK1            = 46,
 };
 
 struct LLM_KV;

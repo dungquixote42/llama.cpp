@@ -4984,6 +4984,8 @@ bool llama_model::load_tensors(llama_model_loader & ml) {
                 {
                     const bool is_mla = hparams.is_mla();
 
+                    const bool is_axk1 = hparams.n_expert == 192;
+
                     // note: these are the actual head sizes you get when treating as MHA or after "decompression" using wv_b for MLA
                     const int64_t n_embd_head_k_mla = hparams.n_embd_head_k_mla();
                     const int64_t n_embd_head_v_mla = hparams.n_embd_head_v_mla();
@@ -5063,8 +5065,8 @@ bool llama_model::load_tensors(llama_model_loader & ml) {
                             layer.ffn_down_shexp = create_tensor(tn(LLM_TENSOR_FFN_DOWN_SHEXP, "weight", i), {        n_ff_exp * n_expert_shared, n_embd}, 0);
                             layer.ffn_up_shexp   = create_tensor(tn(LLM_TENSOR_FFN_UP_SHEXP,   "weight", i), {n_embd, n_ff_exp * n_expert_shared}, 0);
 
-                            layer.ffn_post_norm = create_tensor(tn(LLM_TENSOR_LAYER_OUT_NORM, "weight", i), {n_embd}, TENSOR_NOT_REQUIRED);
-                            if (!layer.ffn_post_norm) {
+                            // skt/A.X-K1
+                            if (is_axk1) {
                                 layer.ffn_post_norm = create_tensor(tn(LLM_TENSOR_FFN_POST_NORM, "weight", i), {n_embd}, 0);
                             }
                         }
